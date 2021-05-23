@@ -1,0 +1,3 @@
+RandomTweaks.Settings.DisableRestartAtCheckpoint: 체크포인트 부활 비활성화
+RandomTweaks.Settings.PlayCLSInEditor: 에디터에서 창작마당 플레이 활성화 (Ctrl+Shift+P)
+RandomTweaks.Settings.EnableOverloadGauge: 과부하 게이지 활성화

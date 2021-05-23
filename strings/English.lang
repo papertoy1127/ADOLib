@@ -1,0 +1,3 @@
+RandomTweaks.Settings.DisableRestartAtCheckpoint: Disable Restart at Checkpoint
+RandomTweaks.Settings.PlayCLSInEditor: Enable Playing CLS in Editor (Ctrl+Shift+P)
+RandomTweaks.Settings.EnableOverloadGauge: Enable Overload Gauge
