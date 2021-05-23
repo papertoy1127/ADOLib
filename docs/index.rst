@@ -1,2 +1,7 @@
-Getting Started
 =============
+ADOLib을 사용해 모드 제작하기
+=============
+
+#. `ADOLib을 프로젝트에서 사용하기 <installation.rst>`_
+  - ㅁㅇㄴㄹ
+  - ㄹㅇㅁㄴ
