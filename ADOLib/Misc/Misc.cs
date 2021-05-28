@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text;
 using HarmonyLib;
 using UnityEngine;
 
@@ -7,6 +11,18 @@ namespace ADOLib.Misc
 {
     public static class Misc
     {
+        public static Assembly GetAssemblyByName(string name)
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().
+                Single(assembly => assembly.GetName().Name == name);
+        }
+        public static string printEnumerator<T>(IEnumerable<T> enumerator) {
+            StringBuilder result = new StringBuilder();
+            enumerator.Do(obj => result.Append(obj + ", "));
+            result.Remove(result.Length - 2, 2);
+            return result.ToString();
+        }
+        
         public static T[] CastArray<T>(object[] input)
         {
             List<T> result = new List<T>();

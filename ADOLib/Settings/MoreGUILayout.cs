@@ -9,6 +9,8 @@ namespace ADOLib.Settings
     /// </summary>
     public static class MoreGUILayout
     {
+        public static Font originalFont { get; internal set; }
+        internal static bool originalFontInitalized = false;
         /// <summary>
         /// ADOLib text GUIStyle
         /// </summary>
@@ -609,11 +611,11 @@ namespace ADOLib.Settings
         /// <param name="value">The value of the toggle box.</param>
         /// <param name="label">The label of the toggle box</param>
         /// <param name="style">GUIStyle of the toggle box.</param>
-        public static bool Toggle(bool value, string label, GUIStyle style = null,
+        public static bool Toggle(bool value, string label, GUIStyle style = null, string trueChar = "☑", string falseChar = "☐",
             params GUILayoutOption[] options)
         {
             if (style == null) style = Text;
-            var toggle = value ? "☑️" : "☐";
+            var toggle = value ? trueChar : falseChar;
             return GUILayout.Toggle(value, $"{toggle} " + label, style, options);
         }
     }

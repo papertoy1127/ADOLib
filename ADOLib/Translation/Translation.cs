@@ -15,7 +15,10 @@ namespace ADOLib.Translation
         {
             Path = path;
             StringsMap = new Dictionary<SystemLanguage, Dictionary<string, string>>();
-            var langFiles = Directory.GetFiles(Path + Setting.LanguageDirectory);
+            var lPath = Path + Setting.LanguageDirectory;
+            if (!Directory.Exists(lPath))
+                Directory.CreateDirectory(lPath);
+            var langFiles = Directory.GetFiles(lPath);
             ADOLib.Log(langFiles.Length);
             foreach (var langFile in langFiles)
             {

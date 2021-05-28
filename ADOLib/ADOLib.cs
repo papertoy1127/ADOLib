@@ -1,9 +1,10 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
 using ADOLib.Settings;
+using ADOLib.SafeTools;
+using ADOLib.Translation;
 
 namespace ADOLib
 {
@@ -16,24 +17,28 @@ namespace ADOLib
     }
     public static class ADOLib
     {
-        public const int MajorVersion = 2;
-        public const int MinorVersion = 0;
-        public const int PatchVersion = 0;
-        public static readonly string IdentifierVersion = "-pre1";
-        public static readonly string Version = $"{MajorVersion}.{MinorVersion}.{PatchVersion}{IdentifierVersion}";
+        public static readonly int MajorVersion = 2;
+        public static readonly int MinorVersion = 1;
+        public static readonly int PatchVersion = 0;
+        public static readonly string VersionIdentifier = "-beta1";
+        public static readonly string Version = $"{MajorVersion}.{MinorVersion}.{PatchVersion}{VersionIdentifier}";
+        
+        public static readonly int RELEASE_NUMBER_FIELD =
+            (int) AccessTools.Field(typeof(GCNS), "releaseNumber").GetValue(null);
         
         public static GameObject Settings;
         public static Harmony harmony;
         public static UnityModManager.ModEntry ModEntry;
+        internal static Translator translator;
         public static string Path { get; private set; }
-        public static String prefix = "ADOLib";
+        internal static string prefix = "ADOLib";
         internal static void Log(object log, LogType logType = LogType.Normal)
         {
             string color = "#ffffff";
             switch (logType)
             {
                 case LogType.Normal:
-                    color = "#ffffff";
+                    color = new Color(0.5f, 0.75f, 1).ToHex();
                     break;
                 case LogType.Warning:
                     color = "#F89B00";
@@ -47,6 +52,11 @@ namespace ADOLib
             }
             UnityModManager.Logger.Log($"<color={color}>{log}</color>", $"[{prefix}] ");
         }
+        
+        internal static void Log(object log, Color color)
+        {
+            UnityModManager.Logger.Log($"<color={color.ToHex()}>{log}</color>", $"[{prefix}] ");
+        }
 
         public static void Setup(UnityModManager.ModEntry modEntry)
         {
@@ -56,37 +66,12 @@ namespace ADOLib
             Settings.AddComponent<SettingsUI>();
             UnityEngine.Object.DontDestroyOnLoad(Settings);
             harmony = new Harmony(modEntry.Info.Id);
-            harmony.PatchAllByVersion(Assembly.GetExecutingAssembly());
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            translator = new Translator(modEntry.Path);
+            
             Log($"ADOLib Version {Version}");
-        }
-        
-        [HarmonyPatch(typeof(scrController), "ValidInputWasTriggered")]
-        private static class ValidInputWasTriggered
-        {
-            public static bool Prefix(ref bool __result)
-            {
-                if (SettingsUI.UI)
-                {
-                    __result = false;
-                    return false;
-                }
-                return true;
-            }
-        }
-        
-        [HarmonyPatch(typeof(PauseMenu), "Show")]
-        private static class DontPause
-        {
-            public static bool Prefix()
-            {
-                if (SettingsUI.Escape)
-                {
-                    scrController.instance.TogglePauseGame();
-                    SettingsUI.Escape = false;
-                    return false;
-                }
-                return true;
-            }
+            Log($"ADOFAI Release r{RELEASE_NUMBER_FIELD}");
+            harmony.PatchCategory<SettingCategory>();
         }
     }
 }

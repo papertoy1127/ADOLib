@@ -2,7 +2,7 @@
   "Id": "ADOLib",
   "DisplayName": "ADOLib",
   "Author": "PERIOT",
-  "Version": "2.0.0-pre1",
+  "Version": "2.1.0-b1",
   "AssemblyName": "ADOLib.dll",
   "EntryMethod": "ADOLib.ADOLib.Setup"
 }

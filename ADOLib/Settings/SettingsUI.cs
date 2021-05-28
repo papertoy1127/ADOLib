@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using HarmonyLib;
 using UnityEngine;
-using UnityModManagerNet;
 using Action = System.Action;
 
 namespace ADOLib.Settings
@@ -38,17 +35,17 @@ namespace ADOLib.Settings
         {
             save ??= DoNothing;
 
-            if (!SettingsUI.Tabs.Contains(tabName))
+            if (!Tabs.Contains(tabName))
             {
-                SettingsUI.Categories[tabName] = null;
-                SettingsUI.Settings[tabName] = setting;
-                SettingsUI.Saves[tabName] = save;
-                SettingsUI.Tabs.Add(tabName);
+                Categories[tabName] = null;
+                Settings[tabName] = setting;
+                Saves[tabName] = save;
+                Tabs.Add(tabName);
             }
             else
             {
-                SettingsUI.Settings[tabName] += setting;
-                SettingsUI.Saves[tabName] += save;
+                Settings[tabName] += setting;
+                Saves[tabName] += save;
             }
         }
 
@@ -56,11 +53,11 @@ namespace ADOLib.Settings
 
 
         private Vector2 _position = new Vector2(0, 0);
-        private void Awake()
-        {
+
+        private void Awake() {
             BG.LoadImage(File.ReadAllBytes($"{ADOLib.Path}settingsBG.png"));
             Background.normal.background = BG;
-            
+
             ButtonActivated.LoadImage(File.ReadAllBytes($"{ADOLib.Path}buttonActivated.png"));
             ButtonNotActivated.LoadImage(File.ReadAllBytes($"{ADOLib.Path}buttonNotActivated.png"));
 
@@ -70,11 +67,10 @@ namespace ADOLib.Settings
             TextInput = MoreGUILayout.TextInput;
         }
 
-        private void Start()
-        {
+        private void Start() {
             Category.RegisterCategories(AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()));
         }
-        
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape) && UI)
@@ -94,8 +90,11 @@ namespace ADOLib.Settings
             }
         }
 
-        void OnGUI()
-        {
+        void OnGUI() {
+            if (!MoreGUILayout.originalFontInitalized) {
+                MoreGUILayout.originalFont = GUI.skin.font;
+                MoreGUILayout.originalFontInitalized = true;
+            }
             Tab.border.Add( new Rect(5, 5, 5, 5));
             Tab.normal.textColor = Color.black;
             Tab.hover.textColor = Color.black;

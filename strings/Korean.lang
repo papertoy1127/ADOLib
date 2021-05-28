@@ -1,3 +1,4 @@
-RandomTweaks.Settings.DisableRestartAtCheckpoint: 체크포인트 부활 비활성화
-RandomTweaks.Settings.PlayCLSInEditor: 에디터에서 창작마당 플레이 활성화 (Ctrl+Shift+P)
-RandomTweaks.Settings.EnableOverloadGauge: 과부하 게이지 활성화
+Category.AdofaiVersionNotCompatible0: ADOFAI 버전이 호환되지 않습니다! r{1} - r{2}가 필요하지만 r{0}이(가) 감지되었습니다.
+Category.AdofaiVersionNotCompatible1: ADOFAI 버전이 호환되지 않습니다! r{1} 이하의 버전이 필요하지만 r{0}이(가) 감지되었습니다.
+Category.AdofaiVersionNotCompatible2: ADOFAI 버전이 호환되지 않습니다! r{1} 이상의 버전이 필요하지만 r{0}이(가) 감지되었습니다.
+Category.AdofaiVersionNotCompatible3: ADOFAI 버전이 호환되지 않습니다! r{1} 버전이 필요하지만 r{0}이(가) 감지되었습니다.

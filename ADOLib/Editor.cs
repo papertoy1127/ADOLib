@@ -1,36 +1,18 @@
-﻿using System;
-using DG.Tweening;
-using DG.Tweening.Core;
-using DG.Tweening.Plugins.Options;
-using UnityEngine.SceneManagement;
+﻿using DG.Tweening;
 using UnityEngine.UI;
 using UnityEngine;
 using ADOLib.Misc;
-using Object = System.Object;
 
 namespace ADOLib
 {
     public static class Editor
     {
-        public static void ShowPopup(bool show, scnEditor.PopupType popupType, string text = "Example Text", float y = 450f,
+        public static void ShowPopup(this scnEditor editor, bool show, scnEditor.PopupType popupType, string text = "Example Text", float y = 450f,
             float alpha = 0.5f, bool skipAnim = false)
         {
-            scnEditor editor = scnEditor.instance;
-            if (editor == null)
-            {
-                foreach (var obj in SceneManager.GetActiveScene().GetRootGameObjects())
-                {
-                    var e = obj.GetComponent<scnEditor>();
-                    if (e == null) e = obj.GetComponentInChildren<scnEditor>();
-                    if (e == null) break;
-                    editor = e;
-                }
-            }
-            
-
             if (editor.get<bool>("popupIsAnimating"))
                 return;
-            editor.set<bool>("showingPopup", show);
+            editor.set("showingPopup", show);
             if (show)
             {
                 foreach (Component component in editor.popupWindow.transform)
@@ -104,18 +86,18 @@ namespace ADOLib
             }
 
             DOTweenModuleUI.DOColor(component1, Color.black.WithAlpha(alpha), duration / 2f)
-                .SetUpdate<TweenerCore<Color, Color, ColorOptions>>(true)
-                .SetEase<TweenerCore<Color, Color, ColorOptions>>(Ease.Linear);
-            editor.set<bool>("popupIsAnimating", true);
-            component2.DOAnchorPosY(endValue, duration).SetUpdate<TweenerCore<Vector2, Vector2, VectorOptions>>(true)
-                .SetEase<TweenerCore<Vector2, Vector2, VectorOptions>>(show ? Ease.OutBack : Ease.InBack)
-                .OnComplete<TweenerCore<Vector2, Vector2, VectorOptions>>((TweenCallback) (() =>
+                .SetUpdate(true)
+                .SetEase(Ease.Linear);
+            editor.set("popupIsAnimating", true);
+            component2.DOAnchorPosY(endValue, duration).SetUpdate(true)
+                .SetEase(show ? Ease.OutBack : Ease.InBack)
+                .OnComplete(() =>
                 {
-                    editor.set<bool>("popupIsAnimating", false);
+                    editor.set("popupIsAnimating", false);
                     if (show)
                         return;
                     editor.popupPanel.SetActive(false);
-                }));
+                });
             editor.ShowFileActionsPanel(false);
             editor.ShowShortcutsPanel(false);
         }

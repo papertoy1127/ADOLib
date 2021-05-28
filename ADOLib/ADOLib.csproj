@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ADOLib</RootNamespace>
     <AssemblyName>ADOLib</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <LangVersion>8</LangVersion>
@@ -35,11 +35,15 @@
   <ItemGroup>
     <Compile Include="ADOLib.cs" />
     <Compile Include="Angle.cs" />
+    <Compile Include="Attribute\CategoryAttribute.cs" />
+    <Compile Include="Attribute\SafePatchAttribute.cs" />
     <Compile Include="Editor.cs" />
     <Compile Include="Misc\Misc.cs" />
-    <Compile Include="Settings\Attributes.cs" />
+    <Compile Include="SafeTools\SafePatch.cs" />
+    <Compile Include="SafeTools\SafeTools.cs" />
     <Compile Include="Settings\Category.cs" />
     <Compile Include="Settings\MoreGUILayout.cs" />
+    <Compile Include="Settings\Patch.cs" />
     <Compile Include="Settings\SettingCategory.cs" />
     <Compile Include="Settings\SettingsUI.cs" />
     <Compile Include="Translation\Setting.cs" />
@@ -56,7 +60,7 @@
       <HintPath>..\..\..\Steam\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Accessibility.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\Steam\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\Steam\steamapps\common\A Dance of Fire and Ice - 복사본\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\Steam\steamapps\common\A Dance of Fire and Ice\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
@@ -404,6 +408,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ADOLib71\ADOLib71.csproj">
+      <Project>{3d317427-20b6-4cfe-8083-f87c7d938fa7}</Project>
+      <Name>ADOLib71</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
