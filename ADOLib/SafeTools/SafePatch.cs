@@ -149,8 +149,18 @@ namespace ADOLib.SafeTools {
                 ADOLib.Log($"No patch class found in category {type}", LogType.Warning);
                 return;
             }
+            ADOLib.Log("Patching SafePatch...");
             var patches = patchClass.GetNestedTypes(AccessTools.all).Where(t => t.GetCustomAttribute<SafePatchAttribute>() != null);
             patches.Do(harmony.SafePatch);
+            ADOLib.Log("Success!", LogType.Success);
+            
+            ADOLib.Log($"Patching HarmonyPatch...");
+            var patches2 = patchClass.GetNestedTypes(AccessTools.all).Where(t => t.GetCustomAttribute<HarmonyPatch>() != null);
+            patches2.Do(t => {
+                harmony.CreateClassProcessor(t).Patch();
+                ADOLib.Log($"Successfully patched HarmonyPatch {t}", LogType.Success);
+            });
+            ADOLib.Log("Success!", LogType.Success);
             ADOLib.Log($"Successfully patched category {type}", LogType.Success);
         }
         
@@ -166,8 +176,21 @@ namespace ADOLib.SafeTools {
                 ADOLib.Log($"No patch class found in category {type}", LogType.Warning);
                 return;
             }
+            ADOLib.Log("Unpatching SafePatch...");
             var patches = patchClass.GetNestedTypes(AccessTools.all).Where(t => t.GetCustomAttribute<SafePatchAttribute>() != null);
             patches.Do(harmony.SafeUnpatch);
+            ADOLib.Log("Success!", LogType.Success);
+            
+            ADOLib.Log("Unpatching HarmonyPatch...");
+            var patches2 = patchClass.GetNestedTypes(AccessTools.all).Where(t => t.GetCustomAttribute<HarmonyPatch>() != null);
+            patches2.Do(t => {
+                var metadata = t.GetCustomAttribute<HarmonyPatch>();
+                foreach (var method in t.GetMethods()) {
+                    harmony.Unpatch(metadata.info.method, method);
+                }
+                ADOLib.Log($"Successfully unpatched HarmonyPatch {t}", LogType.Success);
+            });
+            ADOLib.Log("Success!", LogType.Success);
             ADOLib.Log($"Successfully patched category {type}", LogType.Success);
         }
     }

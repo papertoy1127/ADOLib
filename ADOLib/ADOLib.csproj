@@ -409,12 +409,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ADOLib71\ADOLib71.csproj">
-      <Project>{3d317427-20b6-4cfe-8083-f87c7d938fa7}</Project>
-      <Name>ADOLib71</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

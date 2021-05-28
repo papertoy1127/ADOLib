@@ -20,7 +20,7 @@ namespace ADOLib
         public static readonly int MajorVersion = 2;
         public static readonly int MinorVersion = 1;
         public static readonly int PatchVersion = 0;
-        public static readonly string VersionIdentifier = "-beta1";
+        public static readonly string VersionIdentifier = "-beta2";
         public static readonly string Version = $"{MajorVersion}.{MinorVersion}.{PatchVersion}{VersionIdentifier}";
         
         public static readonly int RELEASE_NUMBER_FIELD =
