@@ -1,0 +1,4 @@
+Category.AdofaiVersionNotCompatible0: "ADOFAI Version not compatible! ADOFAI version r{1} - r{2} needed but {0} detected."
+Category.AdofaiVersionNotCompatible1: "ADOFAI Version not compatible! ADOFAI version up to r{1} needed but {0} detected."
+Category.AdofaiVersionNotCompatible2: "ADOFAI Version not compatible! ADOFAI version at least r{1} needed but {0} detected."
+Category.AdofaiVersionNotCompatible3: "ADOFAI Version not compatible! ADOFAI version r{1} needed but {0} detected."

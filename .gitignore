@@ -1,0 +1,7 @@
+*.dll
+.idea/
+.vs/
+packages/
+ADOLib.sln.DotSettings
+ADOLib/bin/
+ADOLib/obj/

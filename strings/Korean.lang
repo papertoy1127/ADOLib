@@ -1,0 +1,4 @@
+Category.AdofaiVersionNotCompatible0: ADOFAI 버전이 호환되지 않습니다! r{1} - r{2}가 필요하지만 r{0}이(가) 감지되었습니다.
+Category.AdofaiVersionNotCompatible1: ADOFAI 버전이 호환되지 않습니다! r{1} 이하의 버전이 필요하지만 r{0}이(가) 감지되었습니다.
+Category.AdofaiVersionNotCompatible2: ADOFAI 버전이 호환되지 않습니다! r{1} 이상의 버전이 필요하지만 r{0}이(가) 감지되었습니다.
+Category.AdofaiVersionNotCompatible3: ADOFAI 버전이 호환되지 않습니다! r{1} 버전이 필요하지만 r{0}이(가) 감지되었습니다.
