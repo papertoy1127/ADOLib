@@ -1,11 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 
 namespace ADOLib
 {
+    /// <summary>
+    /// Angle class
+    /// </summary>
     public class Angle
     {
+        /// <summary>
+        /// Dictionary that maps char to angle.
+        /// </summary>
         public static Dictionary<char, Angle> CharToAngle = new Dictionary<char, Angle>
         {
             {'R', new Angle(0, 'R', AngleType.Normal)},
@@ -39,15 +44,45 @@ namespace ADOLib
             {'8', new Angle(900M/7M, '8', AngleType.CCW)},
             {'9', new Angle(210, '9', AngleType.CCW)}
         };
+        /// <summary>
+        /// Type of angle.
+        /// </summary>
         public enum AngleType
         {
+            /// <summary>
+            /// Normal angle type.
+            /// </summary>
             Normal,
+            
+            /// <summary>
+            /// Clockwise angle type.
+            /// </summary>
             CW,
+            
+            /// <summary>
+            /// Counter clockwise angle type.
+            /// </summary>
             CCW,
+            
+            /// <summary>
+            /// Midspin angle type.
+            /// </summary>
             Midspin
         }
+        
+        /// <summary>
+        /// Angle value of this angle.
+        /// </summary>
         public readonly decimal angle;
+        
+        /// <summary>
+        /// Angle type of this angle.
+        /// </summary>
         public readonly AngleType angleType;
+        
+        /// <summary>
+        /// Angle char of this angle.
+        /// </summary>
         public readonly char angleChar;
 
         private Angle(decimal angle, char angleChar, AngleType angleType)
@@ -57,18 +92,31 @@ namespace ADOLib
             this.angleType = angleType;
         }
 
+        /// <summary>
+        /// Returns angle with the char.
+        /// </summary>
+        /// <param name="angleChar">Char of the angle.</param>
+        /// <returns><see cref="Angle"/> of which the angle value is <b>angleChar</b>.
+        /// Returns <see langword="null" /> if the angle char is invalid.</returns>
         public static Angle GetAngle(char angleChar)
         {
             if (CharToAngle.ContainsKey(angleChar)) return CharToAngle[angleChar];
             return null;
         }
 
+        /// <summary>
+        /// Returns angle with angle name.
+        /// </summary>
+        /// <param name="angleName">Name of the angle.</param>
+        /// <returns><see cref="Angle"/> of which the name is <b>angleName</b>.
+        /// Returns <see langword="null" /> if the angle name is invalid.</returns>
         public static Angle GetAngle(string angleName)
         {
             if (angleName.StartsWith("Angle")) return CharToAngle[(char) typeof(Angle).GetField(angleName).GetValue(null)];
                 return null;
         }
 
+#pragma warning disable 1591
         public const char Angle0 = 'R';
         public const char Angle15 = 'p';
         public const char Angle30 = 'J';
@@ -99,7 +147,15 @@ namespace ADOLib
         public const char Angle128CW = '7';
         public const char Angle128CCW = '8';
         public const char Angle210CW = '9';
+#pragma warning restore 1591
         
+        /// <summary>
+        /// Rotates angle with the given value.
+        /// </summary>
+        /// <param name="Angle">Original angle char to rotate.</param>
+        /// <param name="rotate">Value of how much to rotate.</param>
+        /// <returns>Rotated char of original char. 
+        /// Returns input angle if rotated angle is invalid.</returns>
         public static char Rotate(char Angle, int rotate)
         {
             rotate += 360; rotate %= 360;
@@ -112,13 +168,17 @@ namespace ADOLib
             angleValue = (angleValue + 360) % 360;
             return GetAngle($"Angle{angleValue}").angleChar;
         }
-
-        public static string Rotate(string Angles, int rotate)
+        
+        /// <summary>
+        /// Rotates angles with the given value.
+        /// </summary>
+        /// <param name="angles">Original angle chars to rotate.</param>
+        /// <param name="rotate">Value of how much to rotate.</param>
+        /// <returns>Rotated string of original chars. </returns>
+        public static string Rotate(string angles, int rotate)
         {
-            List<Angle> angles = new List<Angle>();
             StringBuilder angleString = new StringBuilder();
-            foreach (var angle in Angles.ToCharArray())
-            {
+            foreach (var angle in angles.ToCharArray()) {
                 angleString.Append(Rotate(angle, rotate));
             }
 

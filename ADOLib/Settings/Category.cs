@@ -11,19 +11,63 @@ using HarmonyLib;
 
 namespace ADOLib.Settings
 {
+    /// <summary>
+    /// Whether to force/disable categories.
+    /// </summary>
     public enum ForceType {
+        /// <summary>
+        /// Do not force enable or disable.
+        /// </summary>
         DontForce,
+        
+        /// <summary>
+        /// Force enable.
+        /// </summary>
         ForceEnable,
+        
+        /// <summary>
+        /// Force disable.
+        /// </summary>
         ForceDisable
     }
+    /// <summary>
+    /// How invalid categories will be registered.
+    /// </summary>
+    public enum InvalidMode {
+        /// <summary>
+        /// Disable if invalid.
+        /// </summary>
+        Disable,
+        
+        /// <summary>
+        /// Unregister if invalid.
+        /// </summary>
+        UnRegister
+    }
+    
+    /// <summary>
+    /// Category base class.
+    /// </summary>
     public abstract class Category {
         internal static Dictionary<Type, Category> Categories = new Dictionary<Type, Category>();
         internal static Dictionary<Type, Harmony> Harmonies = new Dictionary<Type, Harmony>();
 
+        /// <summary>
+        /// Get instance of the <see cref="Category"/>.
+        /// </summary>
+        /// <typeparam name="T">Category type to get the instance.</typeparam>
+        /// <returns>Instance of the input Category. </returns>
         public static T GetCategory<T>() where T : Category, new() {
             return (T) GetCategory(typeof(T));
         }
 
+        
+        
+        /// <summary>
+        /// Get instance of the <see cref="Category"/>.
+        /// </summary>
+        /// <param name="type">Category type to get the instance.</param>
+        /// <returns>Instance of the input Category. </returns>
         public static Category GetCategory(Type type) {
             if (Categories.ContainsKey(type)) return Categories[type];
             if (!(Activator.CreateInstance(type) is Category entry)) {
@@ -89,6 +133,11 @@ namespace ADOLib.Settings
         public abstract void OnGUI();
 
         /// <summary>
+        /// Invoked when <see cref="Category"/> is loaded, regardless of whether it is enabled or not.
+        /// </summary>
+        public virtual void Init() { }
+
+        /// <summary>
         /// Whether the category is enabled.
         /// </summary>
         public bool IsEnabled { get; set; } = true;
@@ -102,6 +151,11 @@ namespace ADOLib.Settings
         /// If this <see cref="Category"/> will be forced enable or disable.
         /// </summary>
         public ForceType ForceType { get; set; } = ForceType.DontForce;
+        
+        /// <summary>
+        /// Whether this <see cref="Category"/> will be forced disable or not register when it is invalid.
+        /// </summary>
+        public InvalidMode InvalidMode { get; set; } = InvalidMode.Disable;
 
         /// <summary>
         /// The reason why this <see cref="Category"/> is <see cref="ForceType">Forced</see>.
@@ -152,9 +206,11 @@ namespace ADOLib.Settings
                 ModEntry.Logger.LogException(e);
             }
         }
-
-        public static void RegisterCategories(IEnumerable<Type> types)
+        private static bool _isRegistered = false;
+        internal static void RegisterCategories(IEnumerable<Type> types)
         {
+            if (_isRegistered) return;
+            _isRegistered = true;
             var categoryTypes = types.Where(t => t.GetCustomAttribute<CategoryAttribute>(true) != null)
                 .OrderBy(t => t.GetCustomAttribute<CategoryAttribute>(true).Priority)
                 .ThenBy(t => t.Name)
@@ -170,8 +226,10 @@ namespace ADOLib.Settings
                 instance.Name = categoryAttr.Name;
                 instance.TabName = categoryAttr.TabName;
                 instance.ForceType = categoryAttr.ForceType;
+                instance.InvalidMode = categoryAttr.InvalidMode;
                 instance.ForceReason = categoryAttr.ForceReason;
                 if (!instance.Metadata.isValid) {
+                    if (instance.InvalidMode == InvalidMode.UnRegister) continue;
                     instance.ForceType = ForceType.ForceDisable;
                     if (categoryAttr.MinVersion == -1)
                     {
@@ -200,7 +258,7 @@ namespace ADOLib.Settings
                 else if (instance.ForceType == ForceType.ForceEnable) instance.IsEnabled = true;
                 var text = GUIExtended.Text;
                 text.alignment = TextAnchor.MiddleLeft;
-                text.font = GUIExtended.originalFont;
+                text.font = GUIExtended.ArialFont;
                 text.fontSize = 20;
 
                 Action OnGUI = () => {
@@ -224,11 +282,11 @@ namespace ADOLib.Settings
                     } else if (instance.ForceType == ForceType.ForceDisable) {
                         GUIExtended.Toggle(instance.IsEnabled, 
                             $"<size=50><color=#444444>{instance.Name}</color></size> <color=#555555>{instance.ForceReason}</color>",
-                            GUIExtended.Text, "", "");
+                            GUIExtended.Text, "<color=#555555>☐</color>", "<color=#555555>☐</color>");
                     } else {
                         GUIExtended.Toggle(instance.IsEnabled, 
                             $"<size=50>{instance.Name}</size> <color=#555555>{instance.ForceReason}</color>",
-                            GUIExtended.Text, "", "");
+                            GUIExtended.Text, "<color=#555555>☑</color>", "<color=#555555>☑</color>");
                     }
 
                     GUILayout.EndHorizontal();
@@ -251,6 +309,7 @@ namespace ADOLib.Settings
                     SettingsUI.Settings[tabName] += OnGUI;
                     SettingsUI.Saves[tabName] += instance.Save;
                 }
+                instance.Init();
                 if (instance.IsEnabled) instance.OnEnable();
                 else instance.OnDisable();
                 ADOLib.Log($"Successfully registered category {category}", LogType.Success);

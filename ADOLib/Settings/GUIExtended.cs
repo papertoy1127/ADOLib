@@ -9,8 +9,10 @@ namespace ADOLib.Settings
     /// </summary>
     public static class GUIExtended
     {
-        public static Font originalFont { get; internal set; }
-        internal static bool originalFontInitalized = false;
+        /// <summary>
+        /// Arial font.
+        /// </summary>
+        public static Font ArialFont { get; internal set; }
         /// <summary>
         /// ADOLib text GUIStyle
         /// </summary>
@@ -464,8 +466,7 @@ namespace ADOLib.Settings
         /// range of the list, no items will appear as selected.
         /// </param>
         /// <param name="nameFunc">
-        /// The function determining what gets displayed for each object of type
-        /// <see cref="T"/>.
+        /// The function determining what gets displayed for each object of type T.
         /// </param>
         /// <returns><c>true</c> if the selected item changed.</returns>
         public static bool ToggleList<T>(List<T> list, ref int selectedIndex, Func<T, string> nameFunc)
@@ -570,6 +571,8 @@ namespace ADOLib.Settings
         /// <param name="xCount">The number of items in a row.</param>
         /// <param name="style">GUIStyle of inactive items.</param>
         /// <param name="styleActive">GUIStyle of an active item.</param>
+        /// <param name="options">GUI Options of the selection.</param>
+        /// <returns>Index of selected item (starts at 0).</returns>
         public static int SelectionGrid(int selected, string[] contents, int xCount, GUIStyle style = null,
             GUIStyle styleActive = null, params GUILayoutOption[] options)
         {
@@ -612,6 +615,10 @@ namespace ADOLib.Settings
         /// <param name="value">The value of the toggle box.</param>
         /// <param name="label">The label of the toggle box</param>
         /// <param name="style">GUIStyle of the toggle box.</param>
+        /// <param name="trueChar">Displayed if value is true.</param>
+        /// <param name="falseChar">Displayed if value is false.</param>
+        /// <param name="options">GUI Options of the selection.</param>
+        /// <returns>Toggle value of the toggle box.</returns>
         public static bool Toggle(bool value, string label, GUIStyle style = null, string trueChar = "☑", string falseChar = "☐",
             params GUILayoutOption[] options)
         {

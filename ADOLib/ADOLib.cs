@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using ADOLib.SafeTools;
 using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
@@ -8,30 +11,74 @@ using ADOLib.Translation;
 
 namespace ADOLib
 {
+    /// <summary>
+    /// Logging type
+    /// </summary>
     public enum LogType
     {
+        /// <summary>
+        /// Normal log type.
+        /// </summary>
         Normal,
+        /// <summary>
+        /// Warning log type.
+        /// </summary>
         Warning,
+        /// <summary>
+        /// Error log type.
+        /// </summary>
         Error,
+        /// <summary>
+        /// Success log type.
+        /// </summary>
         Success,
+        /// <summary>
+        /// None log type.
+        /// </summary>
         None
     }
+    
+    /// <summary>
+    /// ADOLib main class
+    /// </summary>
     public static class ADOLib
     {
+        /// <summary>
+        /// Major Version of ADOLib.
+        /// </summary>
         public static readonly int MajorVersion = 2;
+        
+        /// <summary>
+        /// Minor Version of ADOLib.
+        /// </summary>
         public static readonly int MinorVersion = 1;
-        public static readonly int PatchVersion = 0;
-        public static readonly string VersionIdentifier = "-pre1";
+        
+        /// <summary>
+        /// Patch Version of ADOLib.
+        /// </summary>
+        public static readonly int PatchVersion = 1;
+
+        /// <summary>
+        /// Version identifier of ADOLib.
+        /// </summary>
+        public static readonly string VersionIdentifier = "";
+        
+        /// <summary>
+        /// Version of ADOLib.
+        /// </summary>
         public static readonly string Version = $"{MajorVersion}.{MinorVersion}.{PatchVersion}{VersionIdentifier}";
         
+        /// <summary>
+        /// Detected ADOFAI Release number.
+        /// </summary>
         public static readonly int RELEASE_NUMBER_FIELD =
             (int) AccessTools.Field(typeof(GCNS), "releaseNumber").GetValue(null);
         
-        public static GameObject Settings;
-        public static Harmony harmony;
-        public static UnityModManager.ModEntry ModEntry;
+        internal static GameObject Settings;
+        internal static Harmony harmony;
+        internal static UnityModManager.ModEntry ModEntry;
         internal static Translator translator;
-        public static string Path { get; private set; }
+        internal static string Path { get; private set; }
         internal static string prefix = "ADOLib";
         internal static void Log(object log, LogType logType = LogType.Normal)
         {
@@ -66,8 +113,13 @@ namespace ADOLib
             UnityModManager.Logger.Log($"<color={color.ToHex()}>{log}</color>", $"[{prefix}] ");
         }
 
-        public static void Setup(UnityModManager.ModEntry modEntry)
-        {
+        /// <summary>
+        /// ADOLib Setup method.
+        /// </summary>
+        /// <param name="modEntry">ModEntry of the mod.</param>
+        public static void Setup(UnityModManager.ModEntry modEntry) {
+            GUIExtended.ArialFont = Font.CreateDynamicFontFromOSFont("Arial", 16);
+            
             ModEntry = modEntry;
             Path = modEntry.Path;
             Settings = new GameObject("ADOLib Settings");
@@ -80,5 +132,10 @@ namespace ADOLib
             Log($"ADOLib Version {Version}");
             Log($"ADOFAI Release r{RELEASE_NUMBER_FIELD}");
         }
+    }
+
+    [HarmonyPatch(typeof(UnityModManager), "_Start")]
+    internal static class BeforeLoadPatch {
+        public static void Prefix() => Category.RegisterCategories(AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()));
     }
 }

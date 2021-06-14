@@ -1,7 +1,9 @@
 *.dll
 .idea/
 .vs/
+.git/
 packages/
 ADOLib.sln.DotSettings
 ADOLib/bin/
 ADOLib/obj/
+.gitignore

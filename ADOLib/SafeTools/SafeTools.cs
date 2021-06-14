@@ -3,6 +3,17 @@ using System.Linq;
 using System.Reflection;
 
 namespace ADOLib.SafeTools {
+    /*
+    [Flags]
+    public enum AdofaiBranch {
+        None = 0x00000,
+        Oct312020 = 0x00001,
+        Public = 0x00010,
+        Beta = 0x00100,
+        Alpha = 0x01000,
+        Stardust = 0x10000
+    }
+    */
     public static class SafeTools {
         public static void SafelyRun(int minVersion, int maxVersion, Action run, Action ifNot) {
             if ((minVersion <= ADOLib.RELEASE_NUMBER_FIELD || minVersion == -1) &&
@@ -21,6 +32,30 @@ namespace ADOLib.SafeTools {
         
         public static void SafelyRun(string className, string memberName, Action run, Action ifNot) {
             var targetClass = Assembly.GetAssembly(typeof(ADOBase)).GetType(className);
+            if (targetClass == null) {
+                ifNot();
+                return;
+            }
+            var member = targetClass.GetMembers().Where(info => info.Name == memberName);
+            if (member.Count() != 0)
+                run();
+            else
+                ifNot();
+        }
+        
+        public static void SafelyRun(Assembly assembly, string className, Action run, Action ifNot) {
+            if (assembly.GetType(className) != null)
+                run();
+            else
+                ifNot();
+        }
+        
+        public static void SafelyRun(Assembly assembly, string className, string memberName, Action run, Action ifNot) {
+            var targetClass = assembly.GetType(className);
+            if (targetClass == null) {
+                ifNot();
+                return;
+            }
             var member = targetClass.GetMembers().Where(info => info.Name == memberName);
             if (member.Count() != 0)
                 run();

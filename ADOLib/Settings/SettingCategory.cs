@@ -12,6 +12,8 @@ namespace ADOLib.Settings
         Priority = Int32.MaxValue,
         PatchClass = typeof(Patch),
         ForceType = ForceType.ForceEnable)]
+    
+#pragma warning disable 1591
     public class SettingCategory : Category
     {
         public override UnityModManager.ModEntry ModEntry => ADOLib.ModEntry;
@@ -41,3 +43,5 @@ namespace ADOLib.Settings
         }
     }
 }
+
+#pragma warning restore 1591

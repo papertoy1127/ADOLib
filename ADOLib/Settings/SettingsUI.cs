@@ -7,6 +7,9 @@ using Action = System.Action;
 
 namespace ADOLib.Settings
 {
+    /// <summary>
+    /// UI Class used for displaying ADOLib setting interface.
+    /// </summary>
     public class SettingsUI : MonoBehaviour
     {
         internal static List<string> Tabs = new List<string>();
@@ -18,39 +21,35 @@ namespace ADOLib.Settings
         GUIStyle Title = new GUIStyle();
         GUIStyle Tab = new GUIStyle();
         GUIStyle TabSelected = new GUIStyle();
+        
+#pragma warning disable 1591
         public static Texture2D ButtonActivated = new Texture2D(2, 2);
         public static Texture2D ButtonNotActivated = new Texture2D(2, 2);
         public static Texture2D BG = new Texture2D(2, 2);
         public static bool UI;
         public static bool Escape;
         public int selectedTab = 0;
+#pragma warning restore 1591
 
+        /// <summary>
+        /// <see cref="GUIStyle" /> can be used with labels, toggles.
+        /// </summary>
         public static GUIStyle Text;
-        public static GUIStyle Selection;
-        public static GUIStyle SelectionActive;
-        public static GUIStyle TextInput;
         
-        [Obsolete("Use Category class instead.")]
-        public static void AddSetting(string tabName, Action setting, Action save)
-        {
-            save ??= DoNothing;
-
-            if (!Tabs.Contains(tabName))
-            {
-                Categories[tabName] = null;
-                Settings[tabName] = setting;
-                Saves[tabName] = save;
-                Tabs.Add(tabName);
-            }
-            else
-            {
-                Settings[tabName] += setting;
-                Saves[tabName] += save;
-            }
-        }
-
-        public static void DoNothing() { }
-
+        /// <summary>
+        /// <see cref="GUIStyle" /> can be used with buttons, selection grids.
+        /// </summary>
+        public static GUIStyle Selection;
+        
+        /// <summary>
+        /// Activated version of <see cref="Selection"/>.
+        /// </summary>
+        public static GUIStyle SelectionActive;
+        
+        /// <summary>
+        /// <see cref="GUIStyle" /> can be used with text area, text fields.
+        /// </summary>
+        public static GUIStyle TextInput;
 
         private Vector2 _position = new Vector2(0, 0);
 
@@ -65,10 +64,6 @@ namespace ADOLib.Settings
             Selection = GUIExtended.Selection;
             SelectionActive = GUIExtended.SelectionActive;
             TextInput = GUIExtended.TextInput;
-        }
-
-        private void Start() {
-            Category.RegisterCategories(AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()));
         }
 
         private void Update()
@@ -91,10 +86,6 @@ namespace ADOLib.Settings
         }
 
         void OnGUI() {
-            if (!GUIExtended.originalFontInitalized) {
-                GUIExtended.originalFont = GUI.skin.font;
-                GUIExtended.originalFontInitalized = true;
-            }
             Tab.border.Add( new Rect(5, 5, 5, 5));
             Tab.normal.textColor = Color.black;
             Tab.hover.textColor = Color.black;

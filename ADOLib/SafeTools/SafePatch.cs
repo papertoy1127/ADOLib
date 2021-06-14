@@ -50,15 +50,15 @@ namespace ADOLib.SafeTools {
         /// <param name="patchType">Harmony class to apply patch.</param>
         /// </summary>
         public static void SafePatch(this Harmony harmony, Type patchType) {
-            ADOLib.Log($"Patching {patchType}");
             var metadata = patchType.GetCustomAttribute<SafePatchAttribute>();
             if (metadata == null) {
                 ADOLib.Log($"Type {patchType} doesn't have SafePatch attribute.", LogType.Error);
                 return;
             }
-
+            ADOLib.Log($"Patching {metadata.PatchId}");
+            
             if (metadata.IsEnabled) {
-                ADOLib.Log($"{patchType} already patched!", LogType.Warning);
+                ADOLib.Log($"{metadata.PatchId} is already patched!", LogType.Warning);
                 return;
             }
 
@@ -73,24 +73,32 @@ namespace ADOLib.SafeTools {
                 return;
             }
 
-            harmony.CreateClassProcessor(patchType).Patch();
+            try {
+                harmony.CreateClassProcessor(patchType).Patch();
+            }
+            catch (Exception) {
+                ADOLib.Log($"Wrong patch method {metadata.MethodName}", LogType.Warning);
+                return;
+            }
+
             metadata.IsEnabled = true;
-            ADOLib.Log($"Successfully patched {patchType}", LogType.Success);
+            var metadata2 = patchType.GetCustomAttribute<SafePatchAttribute>();
+            ADOLib.Log($"Successfully patched {metadata.PatchId}", LogType.Success);
         }
 
         /// <summary>
         /// Unpatches patch.
         /// </summary>
         public static void SafeUnpatch(this Harmony harmony, Type patchType) {
-            ADOLib.Log($"Unpatching {patchType}");
             var metadata = patchType.GetCustomAttribute<SafePatchAttribute>();
             if (metadata == null) {
                 ADOLib.Log($"Type {patchType} doesn't have SafePatch attribute.");
                 return;
             }
+            ADOLib.Log($"Unpatching {metadata.PatchId}");
 
             if (!metadata.IsEnabled) {
-                ADOLib.Log($"{patchType} is not patched!", LogType.Warning);
+                ADOLib.Log($"{metadata.PatchId} is not patched!", LogType.Warning);
                 return;
             }
 
@@ -106,7 +114,7 @@ namespace ADOLib.SafeTools {
             }
 
             metadata.IsEnabled = false;
-            ADOLib.Log($"Successfully unpatched {patchType}", LogType.Success);
+            ADOLib.Log($"Successfully unpatched {metadata.PatchId}", LogType.Success);
         }
 
         public static void PatchCategory<T>(this Harmony harmony) where T : Category {
@@ -129,10 +137,9 @@ namespace ADOLib.SafeTools {
                 ADOLib.Log($"No patch class found in category {type}", LogType.Warning);
                 return;
             }
-            ADOLib.Log("Patching SafePatch...");
             var patches = patchClass.GetNestedTypes(AccessTools.all).Where(t => t.GetCustomAttribute<SafePatchAttribute>() != null);
-            patches.Do(harmony.SafePatch);
-            ADOLib.Log($"Successfully patched category {type}", LogType.Success);
+            foreach (var p in patches) { harmony.SafePatch(p); }
+                ADOLib.Log($"Successfully patched category {type}", LogType.Success);
         }
         
         public static void UnpatchCategory(this Harmony harmony, Type type) {

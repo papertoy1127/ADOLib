@@ -1,8 +1,11 @@
 ﻿using System;
 
 namespace ADOLib.Settings {
+    /// <summary>
+    /// Category metadata attribute.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class CategoryAttribute : Attribute {
+    public class CategoryAttribute : System.Attribute {
         
         /// <summary>
         /// Name of the Tab which this <see cref="Category"/> is in.
@@ -37,6 +40,11 @@ namespace ADOLib.Settings {
         /// If this <see cref="Category"/> will be forced enable or disable.
         /// </summary>
         public ForceType ForceType { get; set; } = ForceType.DontForce;
+        
+        /// <summary>
+        /// Whether this <see cref="Category"/> will be forced disable or not register when it is invalid.
+        /// </summary>
+        public InvalidMode InvalidMode { get; set; } = InvalidMode.Disable;
 
         /// <summary>
         /// The reason why this <see cref="Category"/> is <see cref="ForceType">Forced</see>.

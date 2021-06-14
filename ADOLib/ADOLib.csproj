@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Xamarin.Forms.5.0.0.2012\build\Xamarin.Forms.props" Condition="Exists('..\packages\Xamarin.Forms.5.0.0.2012\build\Xamarin.Forms.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\ADOLib.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,6 +40,7 @@
     <Compile Include="Attribute\SafePatchAttribute.cs" />
     <Compile Include="Editor.cs" />
     <Compile Include="Misc\Misc.cs" />
+    <Compile Include="SafeTools\SafeGetter.cs" />
     <Compile Include="SafeTools\SafePatch.cs" />
     <Compile Include="SafeTools\SafeTools.cs" />
     <Compile Include="Settings\Category.cs" />
@@ -414,6 +416,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
-   </Target>
+  </Target>
   <Import Project="..\packages\Xamarin.Forms.5.0.0.2012\build\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.5.0.0.2012\build\Xamarin.Forms.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>copy ADOLib.dll "D:\Steam\steamapps\common\A Dance of Fire and Ice\Mods\ADOLib\ADOLib.dll"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

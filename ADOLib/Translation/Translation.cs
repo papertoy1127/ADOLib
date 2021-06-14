@@ -7,10 +7,22 @@ using YamlDotNet.Serialization;
 
 namespace ADOLib.Translation
 {
+    /// <summary>
+    /// ADOLib Translator class.
+    /// </summary>
     public class Translator
     {
+        /// <summary>
+        /// Path the language files are located.
+        /// </summary>
         public string Path { get; }
-        public Dictionary<SystemLanguage, Dictionary<string, string>> StringsMap { get; }
+
+        private Dictionary<SystemLanguage, Dictionary<string, string>> StringsMap { get; }
+        
+        /// <summary>
+        /// Instantiates new translator with path. 
+        /// </summary>
+        /// <param name="path">Path the language files are located.</param>
         public Translator(string path)
         {
             Path = path;
@@ -47,11 +59,22 @@ namespace ADOLib.Translation
             }
         }
 
+        /// <summary>
+        /// Translates text with key.
+        /// </summary>
+        /// <param name="input">Key of the translated string</param>
+        /// <returns>String translated into default language.</returns>
         public string Translate(string input)
         {
             return Translate(input, Setting.Language);
         }
-        
+
+        /// <summary>
+        /// Translates text with key.
+        /// </summary>
+        /// <param name="input">Key of the translated string</param>
+        /// <param name="language"><see cref="SystemLanguage">Language</see> to translate into.</param>
+        /// <returns>String translated into the language.</returns>
         public string Translate(string input, SystemLanguage language)
         {
             if (!StringsMap.ContainsKey(language)) language = SystemLanguage.English;
