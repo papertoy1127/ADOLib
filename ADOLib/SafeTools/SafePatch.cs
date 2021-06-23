@@ -27,7 +27,7 @@ namespace ADOLib.SafeTools {
                 return false;
             }
             var classType = patchAttr.Assembly.GetType(patchAttr.ClassName);
-            
+
             if ((patchAttr.MinVersion <= ADOLib.RELEASE_NUMBER_FIELD || patchAttr.MinVersion == -1) &&
                 (patchAttr.MaxVersion >= ADOLib.RELEASE_NUMBER_FIELD || patchAttr.MaxVersion == -1) &&
                 classType != null) {
@@ -37,7 +37,7 @@ namespace ADOLib.SafeTools {
             if (showDebuggingMessage) {
                 ADOLib.Log($"Patch {patchAttr.PatchId} is invalid! - Specific criteria check:\n" +
                                         $"Metadata.MinVersion <= ADOLib.RELEASE_NUMBER_FIELD ({patchAttr.MinVersion} <= {ADOLib.RELEASE_NUMBER_FIELD}) is {patchAttr.MinVersion <= ADOLib.RELEASE_NUMBER_FIELD}\n" +
-                                        $"Metadata.MinVersion <= ADOLib.RELEASE_NUMBER_FIELD ({patchAttr.MaxVersion} >= {ADOLib.RELEASE_NUMBER_FIELD}) is {patchAttr.MaxVersion >= ADOLib.RELEASE_NUMBER_FIELD}\n" +
+                                        $"Metadata.MinVersion <= ADOLib.RELEASE_NUMBER_FIELD ({patchAttr.MaxVersion} >= {ADOLib.RELEASE_NUMBER_FIELD}) is {patchAttr.MaxVersion >= ADOLib.RELEASE_NUMBER_FIELD || patchAttr.MaxVersion == -1}\n" +
                                         $"ClassType is {classType}\n" +
                                         $"PatchType is {patchType}\n", LogType.Warning);
             }

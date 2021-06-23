@@ -1,9 +1,8 @@
 ﻿using DG.Tweening;
 using UnityEngine.UI;
 using UnityEngine;
-using ADOLib.Misc;
 
-namespace ADOLib
+namespace ADOLib.Misc
 {
     public static class Editor
     {

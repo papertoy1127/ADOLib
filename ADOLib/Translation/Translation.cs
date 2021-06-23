@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using UnityModManagerNet;
+using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
 namespace ADOLib.Translation
@@ -38,20 +40,29 @@ namespace ADOLib.Translation
                 SystemLanguage lang;
                 var langNames = langFile.Split('\\');
                 var langName = langNames[langNames.Length - 1].Replace(".lang", "");
-                if (Enum.TryParse(langName, out lang))
+                if (!Enum.TryParse(langName, out lang)) continue;
+                
+                var builder = new DeserializerBuilder().Build();
+                Dictionary<string, string> langStrings;
+                using (var stream = File.Open(langFile, FileMode.Open, FileAccess.Read))
                 {
-                    var builder = new DeserializerBuilder().Build();
-                    Dictionary<string, string> langStrings;
-                    using (var stream = File.Open(langFile, FileMode.Open, FileAccess.Read))
+                    using (var reader = new StreamReader(stream))
                     {
-                        using (var reader = new StreamReader(stream))
+                        try
                         {
-                            langStrings = builder.Deserialize(reader, typeof(Dictionary<string, string>)) as Dictionary<string, string>;
+                            langStrings =
+                                builder.Deserialize(reader, typeof(Dictionary<string, string>)) as
+                                    Dictionary<string, string>;
+                        }
+                        catch (YamlException)
+                        {
+                            ADOLib.Log($"Cannot load language {lang} from {path}", LogType.Error);
+                            langStrings = new Dictionary<string, string>();
                         }
                     }
-
-                    StringsMap[lang] = langStrings;
                 }
+
+                StringsMap[lang] = langStrings;
             }
             if (!StringsMap.ContainsKey(SystemLanguage.English))
             {
@@ -82,13 +93,10 @@ namespace ADOLib.Translation
             {
                 ADOLib.Log(input);
                 StringsMap[language][input] = $"{language}.{input}.NotTranslated";
-                StringBuilder langStringBuilder = new StringBuilder();
-                foreach (var langString in StringsMap[language])
-                {
-                    langStringBuilder.AppendLine($"{langString.Key}: {langString.Value}");
-                }
+                var serializer = new SerializerBuilder().Build();
                 var path = Path + Setting.LanguageDirectory + $"{language}.lang";
-                File.WriteAllText(path, langStringBuilder.ToString());
+                UnityModManager.Logger.Log(path);
+                File.WriteAllText(path, serializer.Serialize(StringsMap[language]));
             }
             return StringsMap[language][input].Replace("\\n", "\n");
         }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace ADOLib
+namespace ADOLib.Misc
 {
     /// <summary>
     /// Angle class

@@ -37,6 +37,12 @@ namespace ADOLib.Settings {
         public int MaxVersion { get; set; } = -1;
 
         /// <summary>
+        /// ADOFAI branch required to enable this <see cref="Category"/>.
+        /// </summary>
+        public AdofaiBranch ADOFAIBranch { get; set; } = AdofaiBranch.All;
+
+        
+        /// <summary>
         /// If this <see cref="Category"/> will be forced enable or disable.
         /// </summary>
         public ForceType ForceType { get; set; } = ForceType.DontForce;

@@ -12,40 +12,6 @@ using HarmonyLib;
 namespace ADOLib.Settings
 {
     /// <summary>
-    /// Whether to force/disable categories.
-    /// </summary>
-    public enum ForceType {
-        /// <summary>
-        /// Do not force enable or disable.
-        /// </summary>
-        DontForce,
-        
-        /// <summary>
-        /// Force enable.
-        /// </summary>
-        ForceEnable,
-        
-        /// <summary>
-        /// Force disable.
-        /// </summary>
-        ForceDisable
-    }
-    /// <summary>
-    /// How invalid categories will be registered.
-    /// </summary>
-    public enum InvalidMode {
-        /// <summary>
-        /// Disable if invalid.
-        /// </summary>
-        Disable,
-        
-        /// <summary>
-        /// Unregister if invalid.
-        /// </summary>
-        UnRegister
-    }
-    
-    /// <summary>
     /// Category base class.
     /// </summary>
     public abstract class Category {
@@ -178,6 +144,11 @@ namespace ADOLib.Settings
         }
         
         /// <summary>
+        /// Invoked before this category is saved.
+        /// </summary>
+        public virtual void OnSave() { }
+        
+        /// <summary>
         /// The path to the file that holds this category's data.
         /// </summary>
         public string Path => System.IO.Path.Combine(ModEntry.Path, GetType().Name + ".xml");
@@ -191,6 +162,7 @@ namespace ADOLib.Settings
         /// Saves the settings data to the file at the <see cref="Path"></see>.
         /// </summary>
         public void Save() {
+            OnSave();
             var filepath = Path;
             try
             {

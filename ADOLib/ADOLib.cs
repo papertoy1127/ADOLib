@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using ADOLib.SafeTools;
 using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
 using ADOLib.Settings;
-//using ADOLib.SafeTools;
 using ADOLib.Translation;
 
 namespace ADOLib
@@ -51,12 +49,12 @@ namespace ADOLib
         /// <summary>
         /// Minor Version of ADOLib.
         /// </summary>
-        public static readonly int MinorVersion = 1;
+        public static readonly int MinorVersion = 2;
         
         /// <summary>
         /// Patch Version of ADOLib.
         /// </summary>
-        public static readonly int PatchVersion = 1;
+        public static readonly int PatchVersion = 0;
 
         /// <summary>
         /// Version identifier of ADOLib.
@@ -67,7 +65,7 @@ namespace ADOLib
         /// Version of ADOLib.
         /// </summary>
         public static readonly string Version = $"{MajorVersion}.{MinorVersion}.{PatchVersion}{VersionIdentifier}";
-        
+
         /// <summary>
         /// Detected ADOFAI Release number.
         /// </summary>
