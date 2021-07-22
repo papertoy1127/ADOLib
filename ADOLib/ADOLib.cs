@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using HarmonyLib;
-using UnityEngine;
-using UnityModManagerNet;
 using ADOLib.Settings;
 using ADOLib.Translation;
+using HarmonyLib;
+using MelonLoader;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace ADOLib
 {
@@ -35,105 +38,114 @@ namespace ADOLib
         /// </summary>
         None
     }
-    
+
     /// <summary>
     /// ADOLib main class
     /// </summary>
-    public static class ADOLib
+    public class ADOLib: ADOLibMod
     {
+        internal const string _MajorVersion = "2";
+        internal const string _MinorVersion = "2";
+        internal const string _PatchVersion = "0";
+        internal const string _VersionIdentifier = "";
+        internal const string _Version = _MajorVersion + "." + _MinorVersion + "." + _PatchVersion + _VersionIdentifier;
+        
         /// <summary>
         /// Major Version of ADOLib.
         /// </summary>
-        public static readonly int MajorVersion = 2;
+        public static readonly int MajorVersion = int.Parse(_MajorVersion);
         
         /// <summary>
         /// Minor Version of ADOLib.
         /// </summary>
-        public static readonly int MinorVersion = 2;
+        public static readonly int MinorVersion = int.Parse(_MinorVersion);
         
         /// <summary>
         /// Patch Version of ADOLib.
         /// </summary>
-        public static readonly int PatchVersion = 0;
+        public static readonly int PatchVersion = int.Parse(_PatchVersion);
 
         /// <summary>
         /// Version identifier of ADOLib.
         /// </summary>
-        public static readonly string VersionIdentifier = "";
+        public static readonly  string VersionIdentifier = _VersionIdentifier;
         
         /// <summary>
         /// Version of ADOLib.
         /// </summary>
-        public static readonly string Version = $"{MajorVersion}.{MinorVersion}.{PatchVersion}{VersionIdentifier}";
+        public static readonly string Version = _Version;
 
         /// <summary>
         /// Detected ADOFAI Release number.
         /// </summary>
         public static readonly int RELEASE_NUMBER_FIELD =
             (int) AccessTools.Field(typeof(GCNS), "releaseNumber").GetValue(null);
-        
+
+        public override string Path => PathStatic;
+        public static string PathStatic => Directory.GetCurrentDirectory() + "\\Mods\\ADOLib\\";
+
         internal static GameObject Settings;
-        internal static Harmony harmony;
-        internal static UnityModManager.ModEntry ModEntry;
         internal static Translator translator;
-        internal static string Path { get; private set; }
         internal static string prefix = "ADOLib";
+
+        internal static Queue<ADOLibMod> ToInitalize = new Queue<ADOLibMod>();
+        
         internal static void Log(object log, LogType logType = LogType.Normal)
         {
             if (logType == LogType.None) {
-                UnityModManager.Logger.Log($"{log}", $"[{prefix}] ");
+                MelonLogger.Msg($"[{prefix}] {log}");
                 return;
             }
-            string color = "#ffffff";
-            string pre = "";
+
+            ConsoleColor color = ConsoleColor.White;
             switch (logType)
             {
                 case LogType.Normal:
-                    color = new Color(0.5f, 0.75f, 1).ToHex();
+                    color = ConsoleColor.Cyan;
                     break;
                 case LogType.Warning:
-                    color = "#F89B00";
-                    pre = "Warning: ";
-                    break;
+                    color = ConsoleColor.Yellow;
+                    MelonLogger.Warning($"{log}");
+                    return;
                 case LogType.Error:
-                    color = "#DD0000";
-                    pre = "Error: ";
-                    break;
+                    color = ConsoleColor.Red;
+                    MelonLogger.Error($"{log}");
+                    return;
                 case LogType.Success:
-                    color = "#DDDD00";
+                    color = ConsoleColor.Blue;
                     break;
             }
-            UnityModManager.Logger.Log($"<color={color}>{pre}{log}</color>", $"[{prefix}] ");
+            MelonLogger.Msg(color, $"{log}");
         }
         
-        internal static void Log(object log, Color color)
+        internal static void Log(object log, ConsoleColor color)
         {
-            UnityModManager.Logger.Log($"<color={color.ToHex()}>{log}</color>", $"[{prefix}] ");
+            MelonLogger.Msg(color, $"{log}");
         }
+        public static SettingsUI UI;
 
         /// <summary>
         /// ADOLib Setup method.
         /// </summary>
-        /// <param name="modEntry">ModEntry of the mod.</param>
-        public static void Setup(UnityModManager.ModEntry modEntry) {
+        public override void OnApplicationStart() {
             GUIExtended.ArialFont = Font.CreateDynamicFontFromOSFont("Arial", 16);
-            
-            ModEntry = modEntry;
-            Path = modEntry.Path;
-            Settings = new GameObject("ADOLib Settings");
-            Settings.AddComponent<SettingsUI>();
-            UnityEngine.Object.DontDestroyOnLoad(Settings);
-            harmony = new Harmony(modEntry.Info.Id);
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
-            translator = new Translator(modEntry.Path);
-            
+
             Log($"ADOLib Version {Version}");
             Log($"ADOFAI Release r{RELEASE_NUMBER_FIELD}");
         }
-    }
 
-    [HarmonyPatch(typeof(UnityModManager), "_Start")]
-    internal static class BeforeLoadPatch {
-        public static void Prefix() => Category.RegisterCategories(AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()));
+        internal bool isInited = false;
+        public override void OnSceneWasInitialized(int buildIndex, string sceneName) {
+            if (isInited) return;
+            isInited = true;
+            Settings = new GameObject("ADOLib Settings");
+            Object.DontDestroyOnLoad(Settings);
+            UI = Settings.AddComponent<SettingsUI>();
+            while (ToInitalize.TryDequeue(out var mod)) {
+                mod.Init();
+            }
+            HarmonyInstance.PatchAll(Assembly.GetExecutingAssembly());
+            translator = new Translator(Path);
+        }
     }
 }

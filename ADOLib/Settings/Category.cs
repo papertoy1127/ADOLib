@@ -6,8 +6,8 @@ using System.Reflection;
 using System.Xml.Serialization;
 using ADOLib.SafeTools;
 using UnityEngine;
-using UnityModManagerNet;
 using HarmonyLib;
+using MelonLoader;
 
 namespace ADOLib.Settings
 {
@@ -16,7 +16,6 @@ namespace ADOLib.Settings
     /// </summary>
     public abstract class Category {
         internal static Dictionary<Type, Category> Categories = new Dictionary<Type, Category>();
-        internal static Dictionary<Type, Harmony> Harmonies = new Dictionary<Type, Harmony>();
 
         /// <summary>
         /// Get instance of the <see cref="Category"/>.
@@ -35,13 +34,15 @@ namespace ADOLib.Settings
         /// <param name="type">Category type to get the instance.</param>
         /// <returns>Instance of the input Category. </returns>
         public static Category GetCategory(Type type) {
-            if (Categories.ContainsKey(type)) return Categories[type];
-            if (!(Activator.CreateInstance(type) is Category entry)) {
+            if (Categories.ContainsKey(type)) {
+                return Categories[type];
+            }
+            if (!(Activator.CreateInstance(type) is Category category)) {
                 ADOLib.Log($"Type {type} is not a category!", LogType.Error);
                 return null;
             }
-            var modEntry = entry.ModEntry;
-            var path = System.IO.Path.Combine(modEntry.Path, entry.GetType().Name + ".xml");
+            var mod = category.Mod;
+            var path = category.XmlPath;
             if (File.Exists(path))
             {
                 try {
@@ -51,14 +52,16 @@ namespace ADOLib.Settings
                 }
                 catch (Exception e)
                 {
-                    modEntry.Logger.Error("Can't read " + path + ".");
-                    modEntry.Logger.LogException(e);
+                    MelonLogger.Error("Can't read " + path + ".");
+                    MelonLogger.Error(e);
                 }
 
-                Categories[type] = entry;
+                Categories[type] = category;
+                RegisterCategories(new [] {type});
                 return Categories[type];
             }
-            Categories[type] = entry;
+            Categories[type] = category;
+            RegisterCategories(new [] {type});
             return Categories[type];
         }
         
@@ -80,18 +83,14 @@ namespace ADOLib.Settings
         /// <summary>
         /// <see cref="Harmony"/> of this category.
         /// </summary>
-        public Harmony harmony {
-            get {
-                if (!Harmonies.ContainsKey(GetType()))
-                   Harmonies[GetType()] = new Harmony(id);
-                return Harmonies[GetType()];
-            }
-        }
+        public HarmonyLib.Harmony harmony => Mod.HarmonyInstance;
         
         /// <summary>
-        /// Modentry which this <see cref="Category"/> is in.
+        /// Type which inherits ADOLibMod and this <see cref="Category"/> is in.
         /// </summary>
-        public abstract UnityModManager.ModEntry ModEntry { get; }
+        public abstract Type ModType { get; }
+
+        internal ADOLibMod Mod => ADOLibMod.GetInstance(ModType);
         
         /// <summary>
         /// Invoked when <see cref="Category"/> setting is enabled and expanded.
@@ -112,6 +111,12 @@ namespace ADOLib.Settings
         /// Whether the category's settings are expanded in the ADOLib menu.
         /// </summary>
         public bool IsExpanded { get; set; } = true;
+        
+        /// <summary>
+        /// Whether the category is registered in ADOLib.
+        /// </summary>
+        [NonSerialized]
+        internal bool isRegistered = false;
 
         /// <summary>
         /// If this <see cref="Category"/> will be forced enable or disable.
@@ -151,7 +156,11 @@ namespace ADOLib.Settings
         /// <summary>
         /// The path to the file that holds this category's data.
         /// </summary>
-        public string Path => System.IO.Path.Combine(ModEntry.Path, GetType().Name + ".xml");
+        public string XmlPath {
+            get {
+                return Path.Combine(Mod.Path, ModType.Name + ".xml");
+            }
+        }
 
         /// <summary>
         /// <see cref="CategoryAttribute"/> of this category.
@@ -159,11 +168,11 @@ namespace ADOLib.Settings
         public CategoryAttribute Metadata => GetType().GetCustomAttribute<CategoryAttribute>();
 
         /// <summary>
-        /// Saves the settings data to the file at the <see cref="Path"></see>.
+        /// Saves the settings data to the file at the <see cref="XmlPath"></see>.
         /// </summary>
         public void Save() {
             OnSave();
-            var filepath = Path;
+            var filepath = XmlPath;
             try
             {
                 using (var writer = new StreamWriter(filepath))
@@ -174,20 +183,14 @@ namespace ADOLib.Settings
             }
             catch (Exception e)
             {
-                ModEntry.Logger.Error($"Can't save {filepath}.");
-                ModEntry.Logger.LogException(e);
+                MelonLogger.Error($"Can't save {filepath}.");
+                MelonLogger.Error(e);
             }
         }
-        private static bool _isRegistered = false;
         internal static void RegisterCategories(IEnumerable<Type> types)
         {
-            if (_isRegistered) return;
-            _isRegistered = true;
-            var categoryTypes = types.Where(t => t.GetCustomAttribute<CategoryAttribute>(true) != null)
-                .OrderBy(t => t.GetCustomAttribute<CategoryAttribute>(true).Priority)
-                .ThenBy(t => t.Name)
-                .ToList();
-            ADOLib.Log($"Registering categories (total {categoryTypes.Count})");
+            ADOLib.Log("Registering Category");
+            var categoryTypes = types.Where(t => t.GetCustomAttribute<CategoryAttribute>(true) != null).ToList();
             int success = 0;
             foreach (var category in categoryTypes)
             {
@@ -195,13 +198,20 @@ namespace ADOLib.Settings
                 var tabName = categoryAttr.TabName;
 
                 var instance = GetCategory(category);
+                if (instance.isRegistered) {
+                    ADOLib.Log($"Category already registered, skipping category {category}", LogType.Warning);
+                    continue;
+                }
                 instance.Name = categoryAttr.Name;
                 instance.TabName = categoryAttr.TabName;
                 instance.ForceType = categoryAttr.ForceType;
                 instance.InvalidMode = categoryAttr.InvalidMode;
                 instance.ForceReason = categoryAttr.ForceReason;
                 if (!instance.Metadata.isValid) {
-                    if (instance.InvalidMode == InvalidMode.UnRegister) continue;
+                    if (instance.InvalidMode == InvalidMode.UnRegister) {
+                        ADOLib.Log($"Category version uncompatible, skipping category {category}", LogType.Warning);
+                        continue;
+                    }
                     instance.ForceType = ForceType.ForceDisable;
                     if (categoryAttr.MinVersion == -1)
                     {
@@ -274,7 +284,7 @@ namespace ADOLib.Settings
                     SettingsUI.Categories[tabName] = instance;
                     SettingsUI.Settings[tabName] = OnGUI;
                     SettingsUI.Saves[tabName] = instance.Save;
-                    SettingsUI.Tabs.Add(tabName);
+                    SettingsUI.Tabs.Insert(0, tabName);
                 }
                 else
                 {
@@ -287,7 +297,6 @@ namespace ADOLib.Settings
                 ADOLib.Log($"Successfully registered category {category}", LogType.Success);
                 success++;
             }
-            ADOLib.Log($"Registered {success}/{categoryTypes.Count} categories");
         }
     }
 }

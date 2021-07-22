@@ -54,11 +54,9 @@ namespace ADOLib.Misc
         {
             var info1 = o.GetType().GetField(TargetName, AccessTools.all);
             object result;
-            ADOLib.Log("okay");
             if (info1 != null)
             {
                 result = info1.GetValue(o);
-                ADOLib.Log("okay");
                 info1.SetValue(o, value);
                 return;
             }
@@ -72,11 +70,9 @@ namespace ADOLib.Misc
         {
             var info1 = o.GetType().GetField(TargetName, AccessTools.all);
             object result;
-            ADOLib.Log("okay");
             if (info1 != null)
             {
                 result = info1.GetValue(o);
-                ADOLib.Log("okay");
                 info1.SetValue(o, value);
                 return;
             }

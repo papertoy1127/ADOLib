@@ -9,21 +9,21 @@ namespace ADOLib.Settings
     [Category(
         TabName = "Settings", 
         Name = "Settings", 
-        Priority = Int32.MaxValue,
         PatchClass = typeof(Patch),
         ForceType = ForceType.ForceEnable)]
     
 #pragma warning disable 1591
     public class SettingCategory : Category
     {
-        public override UnityModManager.ModEntry ModEntry => ADOLib.ModEntry;
-
         public override void OnEnable() {
             ADOLib.Log("ADOLib Settings Enabled");
         }
         public override void OnDisable() {
             ADOLib.Log("ADOLib Settings Disabled");
         }
+
+        public override Type ModType => typeof(ADOLib);
+
         public override void OnGUI()
         {
             GUILayout.Label("<b><color=#000000><size=35>Settings</size></color></b>");

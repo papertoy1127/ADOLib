@@ -53,20 +53,26 @@ namespace ADOLib.Settings
 
         private Vector2 _position = new Vector2(0, 0);
 
-        private void Awake() {
-            BG.LoadImage(File.ReadAllBytes($"{ADOLib.Path}settingsBG.png"));
+        public void Start() {
+            ADOLib.Log("SettingsUI Start");
+            Category.RegisterCategories(AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()));
+        }
+
+        public void Awake() {
+            BG.LoadImage(File.ReadAllBytes($"{ADOLib.PathStatic}settingsBG.png"));
             Background.normal.background = BG;
 
-            ButtonActivated.LoadImage(File.ReadAllBytes($"{ADOLib.Path}buttonActivated.png"));
-            ButtonNotActivated.LoadImage(File.ReadAllBytes($"{ADOLib.Path}buttonNotActivated.png"));
+            ButtonActivated.LoadImage(File.ReadAllBytes($"{ADOLib.PathStatic}buttonActivated.png"));
+            ButtonNotActivated.LoadImage(File.ReadAllBytes($"{ADOLib.PathStatic}buttonNotActivated.png"));
 
             Text = GUIExtended.Text;
             Selection = GUIExtended.Selection;
             SelectionActive = GUIExtended.SelectionActive;
             TextInput = GUIExtended.TextInput;
+            ADOLib.Log("SettingsUI Awake");
         }
 
-        private void Update()
+        public void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape) && UI)
             {

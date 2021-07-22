@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using UnityEngine;
-using UnityModManagerNet;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
@@ -95,7 +93,7 @@ namespace ADOLib.Translation
                 StringsMap[language][input] = $"{language}.{input}.NotTranslated";
                 var serializer = new SerializerBuilder().Build();
                 var path = Path + Setting.LanguageDirectory + $"{language}.lang";
-                UnityModManager.Logger.Log(path);
+                ADOLib.Log(path);
                 File.WriteAllText(path, serializer.Serialize(StringsMap[language]));
             }
             return StringsMap[language][input].Replace("\\n", "\n");

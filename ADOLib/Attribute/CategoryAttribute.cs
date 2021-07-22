@@ -17,8 +17,9 @@ namespace ADOLib.Settings {
         /// </summary>
         public string Name { get; set; }
         /// <summary>
-        /// Priority of this <see cref="Category"/>. Default by 0.
+        /// Deprecated. No longer used.
         /// </summary>
+        [Obsolete]
         public int Priority { get; set; } = 0;
         
         /// <summary>

@@ -9,6 +9,7 @@ using UnityModManagerNet;
 namespace ADOLib {
     internal static class Patch {
         [SafePatch("ADOLib.ValidInputWasTriggeredPatch", "scrController", "ValidInputWasTriggered")]
+        //[HarmonyPatch(typeof(scrController), "ValidInputWasTriggered")]
         private static class ValidInputWasTriggered
         {
             public static bool Prefix(ref bool __result)
@@ -23,7 +24,7 @@ namespace ADOLib {
         }
         
         [SafePatch("ADOLib.ShowPauseMenu", "PauseMenu", "Show")]
-        [HarmonyPatch(typeof(PauseMenu), "Show")]
+        //[HarmonyPatch(typeof(PauseMenu), "Show")]
         private static class DontPause
         {
             public static bool Prefix()

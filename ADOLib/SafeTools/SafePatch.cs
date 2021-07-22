@@ -49,7 +49,7 @@ namespace ADOLib.SafeTools {
         /// <param name="harmony">Harmony class to apply patch.</param>
         /// <param name="patchType">Harmony class to apply patch.</param>
         /// </summary>
-        public static void SafePatch(this Harmony harmony, Type patchType) {
+        public static void SafePatch(this HarmonyLib.Harmony harmony, Type patchType) {
             var metadata = patchType.GetCustomAttribute<SafePatchAttribute>();
             if (metadata == null) {
                 ADOLib.Log($"Type {patchType} doesn't have SafePatch attribute.", LogType.Error);
@@ -89,7 +89,7 @@ namespace ADOLib.SafeTools {
         /// <summary>
         /// Unpatches patch.
         /// </summary>
-        public static void SafeUnpatch(this Harmony harmony, Type patchType) {
+        public static void SafeUnpatch(this HarmonyLib.Harmony harmony, Type patchType) {
             var metadata = patchType.GetCustomAttribute<SafePatchAttribute>();
             if (metadata == null) {
                 ADOLib.Log($"Type {patchType} doesn't have SafePatch attribute.");
@@ -117,15 +117,15 @@ namespace ADOLib.SafeTools {
             ADOLib.Log($"Successfully unpatched {metadata.PatchId}", LogType.Success);
         }
 
-        public static void PatchCategory<T>(this Harmony harmony) where T : Category {
+        public static void PatchCategory<T>(this HarmonyLib.Harmony harmony) where T : Category {
             PatchCategory(harmony, typeof(T));
         }
         
-        public static void UnpatchCategory<T>(this Harmony harmony) where T : Category {
+        public static void UnpatchCategory<T>(this HarmonyLib.Harmony harmony) where T : Category {
             UnpatchCategory(harmony, typeof(T));
         }
         
-        public static void PatchCategory(this Harmony harmony, Type type) {
+        public static void PatchCategory(this HarmonyLib.Harmony harmony, Type type) {
             ADOLib.Log($"Patching category {type}");
             var patchAttr = type.GetCustomAttribute<CategoryAttribute>();
             if (!patchAttr.isValid) {
@@ -142,7 +142,7 @@ namespace ADOLib.SafeTools {
                 ADOLib.Log($"Successfully patched category {type}", LogType.Success);
         }
         
-        public static void UnpatchCategory(this Harmony harmony, Type type) {
+        public static void UnpatchCategory(this HarmonyLib.Harmony harmony, Type type) {
             ADOLib.Log($"Unpatching category {type}");
             var patchAttr = type.GetCustomAttribute<CategoryAttribute>();
             if (!patchAttr.isValid) {
